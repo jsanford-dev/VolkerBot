@@ -1,5 +1,6 @@
 import pandas as pd
 import re
+from table_scraper import get_table_by_caption
 
 def convert_discount_rates_to_float(df):
     """
@@ -13,9 +14,9 @@ def convert_discount_rates_to_float(df):
     return df
 
 def determine_fomc_action(x):
-    """
-    Determines if fomc decision was a cut, hike, or hold.
-    """
+    
+    # Determines if fomc decision was a cut, hike, or hold.
+    
     if pd.isna(x):
         return None
     elif x > 0:
@@ -26,6 +27,7 @@ def determine_fomc_action(x):
         return 'hold'
     
 def validation_checks(df):
+   
     # Check if df is a DataFrame
     assert isinstance(df, pd.DataFrame), "Input is not a DataFrame"
 
@@ -52,9 +54,8 @@ def validation_checks(df):
         "Unexpected values in 'action'"
 
 def save_fomc_actions(df, file_path = 'data/fomc_actions.csv'):
-    """
-    Name file and save as csv in VolkerBot.
-    """
+    
+    # Name file and save as csv in VolkerBot
     df.to_csv(file_path, index=False, encoding='utf-8')
     print(f"FOMC actions saved to {file_path}")
 
@@ -64,13 +65,11 @@ def fetch_fomc_action():
     in VolkerBot\Data.
     """
 
-    # import tables from wikipage
-    df = pd.read_html(
-        'https://en.wikipedia.org/wiki/History_of_Federal_Open_Market_Committee_actions'
-    )
+    #These are the instructions for the dynamic table search 
+    url = 'https://en.wikipedia.org/wiki/History_of_Federal_Open_Market_Committee_actions'
+    caption = "FOMC Federal Funds Rate History"
     
-    # isolate specific table
-    df = df[1].copy()
+    df = get_table_by_caption(url, caption)
 
     # format dataframe.
     df = df.rename(columns={
